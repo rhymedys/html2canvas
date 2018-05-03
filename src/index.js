@@ -67,7 +67,14 @@ const html2canvas = (element: HTMLElement, conf: ?Options): Promise<*> => {
         scrollY: defaultView.pageYOffset
     };
 
-    const result = renderElement(element, {...defaultOptions, ...config}, logger);
+    const result = renderElement(
+        element,
+        {
+            ...defaultOptions,
+            ...config
+        },
+        logger
+    );
 
     if (__DEV__) {
         return result.catch(e => {
@@ -79,5 +86,11 @@ const html2canvas = (element: HTMLElement, conf: ?Options): Promise<*> => {
 };
 
 html2canvas.CanvasRenderer = CanvasRenderer;
+html2canvas.dispatchEvent = function() {
+    const event = document.createEvent('HTMLEvents');
+    event.initEvent('Html2canvasReady', true, true);
+    document.dispatchEvent(event);
+};
 
 module.exports = html2canvas;
+window.setTimeout(html2canvas.dispatchEvent, 0);
